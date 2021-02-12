@@ -2,7 +2,6 @@
 
 import countryManager from "./countrymanager"
 import linkManager from "./linkmanager"
-import _ = require("lodash")
 import express = require("express")
 import logger = require("anyhow")
 const settings = require("setmeup").settings
