@@ -14,6 +14,9 @@ const startup = async () => {
     try {
         logger.setup("console")
         setmeup.load()
+        setmeup.loadFromEnv()
+
+        // Load local settings (if there's a file).
         setmeup.load("settings.local.json")
 
         // Debugging enabled?

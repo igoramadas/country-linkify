@@ -1,6 +1,6 @@
 {
     "name": "country-linkify",
-    "version": "21.65.12029",
+    "version": "21.65.12037",
     "description": "Simple service to redirect links based on the client's country.",
     "keywords": [
         "bit.ly",
