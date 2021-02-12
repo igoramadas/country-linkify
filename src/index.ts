@@ -16,10 +16,18 @@ const startup = async () => {
         setmeup.load()
         setmeup.load("settings.local.json")
 
+        // Debugging enabled?
         if (setmeup.settings.debug) {
             logger.levels.push("debug")
         }
 
+        // Port set via the PORT eenvironment variable?
+        if (process.env.PORT) {
+            logger.info("Index", `Port ${process.env.PORT} set via envionment variable`)
+            setmeup.settings.server.port = process.env.PORT
+        }
+
+        // Start everything.
         await countryManager.init()
         await linkManager.init()
         await server.init()

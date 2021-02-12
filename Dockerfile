@@ -10,7 +10,7 @@ FROM node:14-alpine AS cl-dependencies
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
-RUN apk update && apk upgrade && npm install --production && rm -rf ./node_modules/typescript
+RUN apk update && apk upgrade && npm install --production
 
 # FINAL IMAGE
 FROM node:14-alpine AS cl-final
