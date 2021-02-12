@@ -4,6 +4,7 @@ import countryManager from "./countrymanager"
 import linkManager from "./linkmanager"
 import express = require("express")
 import logger = require("anyhow")
+import path = require("path")
 const settings = require("setmeup").settings
 
 export class Server {
@@ -47,11 +48,16 @@ export class Server {
             this.app.use("*", routeLogger)
         }
 
-        // Setup routes.
+        // Static routes.
         this.app.get(`/`, this.indexRoute)
+        this.app.get("/robots.txt", this.robotsRoute)
+
+        // API, links and search.
         this.app.get(`/${settings.server.apiKey}/list`, this.apiListRoute)
         this.app.get(`/l/:id`, this.linkRoute)
         this.app.get(`/s/:query`, this.searchRoute)
+
+        // No index.
 
         // Start the server.
         this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
@@ -67,6 +73,14 @@ export class Server {
         const target = settings.app.homeUrl || settings.app.defaultUrl
         logger.debug("Server.indexRoute", req.originalUrl, target)
         res.redirect(target)
+    }
+
+    /**
+     * Robots.txt route.
+     */
+    robotsRoute = async (req: express.Request, res: express.Response) => {
+        logger.debug("Server.robotsRoute", req.originalUrl)
+        res.sendFile(path.join(__dirname, "../assets/robots.txt"))
     }
 
     /**
