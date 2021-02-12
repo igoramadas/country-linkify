@@ -1,0 +1,14 @@
+.DS_Store
+.travis.yml
+.nojekyll
+.git/
+.history/
+coverage/
+docs/
+src/
+test/
+CNAME
+History.md
+Makefile
+settings.local.json
+tsconfig.json

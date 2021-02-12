@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "baseUrl": "",
+        "rootDir": "src",
+        "outDir": "lib",
+        "target": "es2018",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "declaration": true
+    },
+    "typedocOptions": {
+        "entryPoints": ["./src/"],
+        "excludeExternals": true,
+        "excludePrivate": true,
+        "name": "Country Linkify",
+        "out": "docs",
+        "gaID": "UA-9331973-4"
+    }
+}

@@ -1,0 +1,12 @@
+.DS_Store
+.prettierignore
+.github/
+.history/
+.vscode/
+coverage/
+docs/
+node_modules/
+Makefile
+settings.local.json
+settings.secret.json
+*.log
