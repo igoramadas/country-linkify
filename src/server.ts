@@ -26,7 +26,7 @@ export class Server {
         if (!settings.server.url) {
             throw new Error(`Missing "server.url" on settings`)
         }
-        if (!settings.server.port || !_.isInteger(settings.server.port)) {
+        if (!settings.server.port) {
             throw new Error(`The "server.port" must be a valid port number`)
         }
         if (!settings.server.apiKey) {
@@ -55,9 +55,7 @@ export class Server {
         this.app.get(`/s/:query`, this.searchRoute)
 
         // Start the server.
-        this.app.listen(settings.server.port, () => {
-            logger.info("Server", `Listeing on port ${settings.server.port}`)
-        })
+        this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
     }
 
     // ROUTES
