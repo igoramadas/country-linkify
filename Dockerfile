@@ -1,6 +1,6 @@
 # BUILDER
 FROM node:14-alpine AS cl-builder
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 WORKDIR /app
 COPY . .
 RUN apk update && apk upgrade && npm install && ./node_modules/.bin/tsc
