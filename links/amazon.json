@@ -1,4 +1,10 @@
 {
+    "bikes": {
+        "de": "https://amzn.to/3jOP3zO",
+        "es": "https://amzn.to/37fcs8C",
+        "uk": "https://amzn.to/3rUqAMw",
+        "us": "https://amzn.to/3rSLLOP"
+    },
     "garmin-edge-130-plus": {
         "de": "https://amzn.to/373yoUd",
         "uk": "https://amzn.to/3rKV8Ai",
