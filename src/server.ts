@@ -88,7 +88,8 @@ export class Server {
      */
     linkRoute = async (req: express.Request, res: express.Response) => {
         let target: string
-        let country = await this.getClientCountry(req)
+        let ip = this.getClientIP(req)
+        let country = await this.getClientCountry(req, ip)
         let countryLog = country
 
         if (!country) {
@@ -105,7 +106,7 @@ export class Server {
             logger.debug("Server.linkRoute", req.params.id, target)
         }
 
-        logger.info("Server.linkRoute", req.params.id, `Country: ${countryLog}`, target)
+        logger.info("Server.linkRoute", req.params.id, `IP: ${ip}`, `Country: ${countryLog}`, target)
 
         return res.redirect(target)
     }
@@ -197,9 +198,10 @@ export class Server {
     /**
      * Get the client's country address based on headers and IP.
      * @param req Request object.
+     * @param ip Optional, the client IP (in case it was parsed before).
      */
-    getClientCountry = async (req: express.Request): Promise<string> => {
-        const ip = this.getClientIP(req)
+    getClientCountry = async (req: express.Request, ip?: string): Promise<string> => {
+        if (!ip) ip = this.getClientIP(req)
 
         // WHen running locally, return default country.
         if (!ip || ip.indexOf("127.0.0.1") >= 0) {
