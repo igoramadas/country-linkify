@@ -89,10 +89,11 @@ export class Server {
     linkRoute = async (req: express.Request, res: express.Response) => {
         let target: string
         let country = await this.getClientCountry(req)
+        let countryLog = country
 
         if (!country) {
             country = settings.country.default
-            logger.debug("Server.linkRoute", req.params.id, `Using default country`)
+            countryLog = "default"
         }
 
         target = linkManager.urlFor(req.params.id, country)
@@ -103,6 +104,8 @@ export class Server {
         } else {
             logger.debug("Server.linkRoute", req.params.id, target)
         }
+
+        logger.info("Server.linkRoute", req.params.id, `Country: ${countryLog}`, target)
 
         return res.redirect(target)
     }
