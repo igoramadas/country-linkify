@@ -1,40 +1,20 @@
 {
-    "bikes": {
-        "de": "https://amzn.to/3jOP3zO",
-        "es": "https://amzn.to/37fcs8C",
-        "uk": "https://amzn.to/3rUqAMw",
-        "us": "https://amzn.to/3rSLLOP"
+    "cycling": {
+        "de": "https://amzn.to/3k5tj3q",
+        "es": "https://amzn.to/37WrgbY",
+        "us": "https://amzn.to/2Uvdhqy",
+        "uk": "https://amzn.to/3k5VJdz"
     },
     "running": {
-        "de": "https://amzn.to/30DOlNd",
-        "es": "https://amzn.to/3voU87e",
-        "uk": "https://amzn.to/2NjMyKa",
-        "us": "https://amzn.to/3bKXlq5"
+        "de": "https://amzn.to/3y1c7Rm",
+        "es": "https://amzn.to/3D12KVB",
+        "us": "https://amzn.to/3iWABXH",
+        "uk": "https://amzn.to/3xWrR8p"
     },
-    "garmin-edge-130-plus": {
-        "de": "https://amzn.to/373yoUd",
-        "uk": "https://amzn.to/3rKV8Ai",
-        "us": "https://amzn.to/3aYh0RR"
-    },
-    "garmin-edge-530": {
-        "de": "https://amzn.to/3abECDc",
-        "es": "https://amzn.to/3tMIXER",
-        "uk": "https://amzn.to/37at41k",
-        "us": "https://amzn.to/2Np0wtF"
-    },
-    "dji-osmo-action": {
-        "de": "https://amzn.to/3d1CJed",
-        "uk": "https://amzn.to/2NhZ3Fs",
-        "us": "https://amzn.to/3dabqOK"
-    },
-    "victure-ac940": {
-        "de": "https://amzn.to/2Onu0bT",
-        "es": "https://amzn.to/3rRRHYz",
-        "us": "https://amzn.to/3tP51yE"
-    },
-    "wahoo-bolt": {
-        "de": "https://amzn.to/3jHg2gT",
-        "uk": "https://amzn.to/3phVMTY",
-        "us": "https://amzn.to/3d6WkcU"
+    "sports": {
+        "de": "https://amzn.to/3AVeTJJ",
+        "es": "https://amzn.to/37X8SzP",
+        "us": "https://amzn.to/3meHOEv",
+        "uk": "https://amzn.to/3sv9Rka"
     }
 }
