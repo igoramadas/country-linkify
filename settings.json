@@ -12,11 +12,10 @@
     },
     // If country can't be determined or there's no link for the user's country.
     "country": {
-        "default": "de"
-        //"default": "us"
-        //"de": ["at", "be", "ch", "cz", "dk", "ee", "fi", "fr", "hu", "it", "nl", "no", "pl", "se", "sk"]
-        //"es": ["mt", "pt"]
-        //"uk": ["gi", "ie"]
+        "default": "us",
+        "de": ["at", "be", "ch", "cz", "dk", "ee", "fi", "fr", "hu", "it", "nl", "no", "pl", "se", "sk"],
+        "es": ["mt", "pt"],
+        "uk": ["gi", "ie"]
     },
     "links": {
         // Auto reload links when the JSON files change. Set to false to disable.
@@ -27,10 +26,10 @@
     },
     // URLS to the base search queries, the actual query will be replaced on the ${query} tag.
     "search": {
-        "de": "https://www.amazon.de/s?linkCode=ll2&tag=devv03-21&ref_=as_li_ss_tl&k=${query}"
-        //"es": "https://www.amazon.es/s?linkCode=ll2&tag=igoramadas03-21&ref_=as_li_ss_tl&k=${query}"
-        //"uk": "https://www.amazon.co.uk/s?linkCode=ll2&tag=igoramadas018-21&ref_=as_li_ss_tl&k=${query}"
-        //"us": "https://www.amazon.com/s?&linkCode=ll2&tag=igoramadas0e-20&ref_=as_li_ss_tl&k=${query}"
+        "de": "https://www.amazon.de/s?linkCode=ll2&tag=devv03-21&ref_=as_li_ss_tl&k=${query}",
+        "es": "https://www.amazon.es/s?linkCode=ll2&tag=devv0a-21&ref_=as_li_ss_tl&k=${query}",
+        "uk": "https://www.amazon.co.uk/s?linkCode=ll2&tag=devv0c-21&ref_=as_li_ss_tl&k=${query}",
+        "us": "https://www.amazon.com/s?&linkCode=ll2&tag=devv08-20&ref_=as_li_ss_tl&k=${query}"
     },
     // Default encoding is set to UTF-8.
     "encoding": "utf8"
