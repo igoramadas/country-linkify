@@ -135,12 +135,15 @@ export class LinkManager {
                 const translatedPath = filepath.replace(__dirname, "")
                 logger.info("LinkManager.loadFile", translatedPath, id, `${urlCount} links for countries ${countryCodes}`)
 
-                // Add data to the links store.
-                this.links[id] = {
+                const linkData = {
                     id: id,
                     category: category,
                     urls: countryUrls as any
                 }
+
+                // Add data to the links store, also with the category prefix.
+                this.links[id] = linkData
+                if (category != id) this.links[`${category}-${id}`] = linkData
             }
         } catch (ex) {
             logger.error("LinkManager.loadFile", filepath, ex)
