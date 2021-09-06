@@ -2,19 +2,36 @@
     "cycling": {
         "de": "https://amzn.to/3k5tj3q",
         "es": "https://amzn.to/37WrgbY",
-        "us": "https://amzn.to/2Uvdhqy",
-        "uk": "https://amzn.to/3k5VJdz"
+        "uk": "https://amzn.to/3k5VJdz",
+        "us": "https://amzn.to/2Uvdhqy"
     },
     "running": {
         "de": "https://amzn.to/3y1c7Rm",
         "es": "https://amzn.to/3D12KVB",
-        "us": "https://amzn.to/3iWABXH",
-        "uk": "https://amzn.to/3xWrR8p"
+        "uk": "https://amzn.to/3xWrR8p",
+        "us": "https://amzn.to/3iWABXH"
     },
     "sports": {
         "de": "https://amzn.to/3AVeTJJ",
         "es": "https://amzn.to/37X8SzP",
-        "us": "https://amzn.to/3meHOEv",
-        "uk": "https://amzn.to/3sv9Rka"
+        "uk": "https://amzn.to/3sv9Rka",
+        "us": "https://amzn.to/3meHOEv"
+    },
+    "dji-osmo-action": {
+        "de": "https://amzn.to/3jLvzh1",
+        "es": "https://amzn.to/3DTqewo",
+        "uk": "https://amzn.to/3h7ZIp5",
+        "us": "https://amzn.to/3zVttRG"
+    },
+    "garmin-edge-530": {
+        "de": "https://amzn.to/3jPjRSw",
+        "es": "https://amzn.to/3yLdvrH",
+        "uk": "https://amzn.to/3ySsnEK",
+        "us": "https://amzn.to/3zNQl5u"
+    },
+    "victure-ac940": {
+        "de": "https://amzn.to/2VjRl25",
+        "uk": "https://amzn.to/3BK1t3D",
+        "us": "https://amzn.to/3jJ628h"
     }
 }
