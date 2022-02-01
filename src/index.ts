@@ -19,11 +19,6 @@ const startup = async () => {
         // Load local settings (if there's a file).
         setmeup.load("settings.local.json")
 
-        // Debugging enabled?
-        if (setmeup.settings.debug) {
-            logger.levels.push("debug")
-        }
-
         // Port set via the PORT eenvironment variable?
         if (process.env.PORT) {
             logger.info("Index", `Port ${process.env.PORT} set via envionment variable`)
