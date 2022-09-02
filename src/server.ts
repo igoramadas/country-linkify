@@ -204,7 +204,7 @@ export class Server {
         if (!ip) ip = this.getClientIP(req)
 
         // WHen running locally, return default country.
-        if (!ip || ip.indexOf("127.0.0.1") >= 0) {
+        if (!ip || ip.includes("127.0.0.1")) {
             return settings.country.default
         }
 
