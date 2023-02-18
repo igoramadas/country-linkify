@@ -1,6 +1,6 @@
 // COUNTRY LINKIFY: COUNTRY MANAGER
 
-import _ = require("lodash")
+import _ from "lodash"
 import bent = require("bent")
 import logger = require("anyhow")
 const settings = require("setmeup").settings

@@ -2,7 +2,7 @@
 
 import {Link} from "./types"
 import countryManager from "./countrymanager"
-import _ = require("lodash")
+import _ from "lodash"
 import fs = require("fs")
 import jaul = require("jaul")
 import path = require("path")
