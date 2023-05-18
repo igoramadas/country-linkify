@@ -1,19 +1,19 @@
 # BUILDER
-FROM node:19-alpine AS cl-builder
+FROM node:20-alpine AS cl-builder
 ENV NODE_ENV=development
 WORKDIR /app
 COPY . .
 RUN apk update && apk upgrade && npm install && ./node_modules/.bin/tsc
 
 # DEPENDENCIES
-FROM node:19-alpine AS cl-dependencies
+FROM node:20-alpine AS cl-dependencies
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
 RUN apk update && apk upgrade && npm install --production
 
 # FINAL IMAGE
-FROM node:19-alpine AS cl-final
+FROM node:20-alpine AS cl-final
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
