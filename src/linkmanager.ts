@@ -82,12 +82,14 @@ export class LinkManager {
                     if (settings.links.autoReload) {
                         const watcher = fs.watch(filepath, async (e, changedfile) => {
                             if (changedfile && e == "change") {
+                                const basename = path.basename(changedfile, ".json")
+
                                 try {
                                     changedfile = path.join(diretory, changedfile)
-                                    logger.info("LinkManager.load.watch", changedfile, "Reloading")
+                                    logger.info("LinkManager.load.watch", basename, "Reloading")
                                     await this.loadFile(changedfile)
                                 } catch (ex) {
-                                    logger.warn("LinkManager.load.watch", changedfile, "Failed to reload")
+                                    logger.warn("LinkManager.load.watch", basename, "Failed to reload")
                                 }
                             }
                         })
