@@ -2,10 +2,8 @@
 
 {
     "app": {
-        // Default URL to return for links that have no matching ID or country.
-        "defaultUrl": "https://amzn.to/3mcBqgX",
         // Homepage should redirect to this URL. If set to "null",
-        // it will redirect to the defaultUrl above.
+        // it will display all links with logos instead.
         "homeUrl": "https://devv.com/",
         // Application title.
         "title": "Country Linkify"
@@ -19,15 +17,15 @@
     "links": {
         // Auto reload links when the JSON files change. Set to false to disable.
         "autoReload": true,
-        // If set to true and more than 1 URL is set for a particular link / country,
-        // it will return a random URL from the array instead of the very first one.
-        "randomize": false
-    },
-    // URLS to the base search queries, the actual query will be replaced on the ${query} tag.
-    "search": {
-        "es": "https://www.amazon.es/s?linkCode=ll2&tag=devv0a-21&ref_=as_li_ss_tl&k=${query}",
-        "uk": "https://www.amazon.co.uk/s?linkCode=ll2&tag=devv0c-21&ref_=as_li_ss_tl&k=${query}",
-        "us": "https://www.amazon.com/s?&linkCode=ll2&tag=devv08-20&ref_=as_li_ss_tl&k=${query}"
+        // Link aliases.
+        "aliases": {
+            "bike": ["bicycle"],
+            "e-bike": ["electric-bike"],
+            "inner-tube": ["tpu-inner-tube"],
+            "gravel-bike": ["cx-bike"],
+            "road-bike": ["racing-bike"],
+            "tire": ["tyre", "front-tire", "rear-tire"]
+        }
     },
     // Default encoding is set to UTF-8.
     "encoding": "utf8"

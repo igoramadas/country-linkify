@@ -3,6 +3,7 @@
 import countryManager from "./countrymanager"
 import linkManager from "./linkmanager"
 import express = require("express")
+import fs = require("fs")
 import logger = require("anyhow")
 import path = require("path")
 const settings = require("setmeup").settings
@@ -51,13 +52,12 @@ export class Server {
         // Static routes.
         this.app.get(`/`, this.indexRoute)
         this.app.get("/robots.txt", this.robotsRoute)
+        this.app.get(`/404`, this.notFoundRoute)
+        this.app.get(`/images/:filename`, this.imageRoute)
 
-        // API, links and search.
+        // API and links.
         this.app.get(`/${settings.server.apiKey}/list`, this.apiListRoute)
         this.app.get(`/l/:id`, this.linkRoute)
-        this.app.get(`/s/:query`, this.searchRoute)
-
-        // No index.
 
         // Start the server.
         this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
@@ -70,9 +70,8 @@ export class Server {
      * Homepage route.
      */
     indexRoute = async (req: express.Request, res: express.Response) => {
-        const target = settings.app.homeUrl || settings.app.defaultUrl
-        logger.debug("Server.indexRoute", req.originalUrl, target)
-        res.redirect(target)
+        logger.debug("Server.indexRoute", req.originalUrl)
+        res.redirect(settings.app.homeUrl || "/404")
     }
 
     /**
@@ -81,6 +80,42 @@ export class Server {
     robotsRoute = async (req: express.Request, res: express.Response) => {
         logger.debug("Server.robotsRoute", req.originalUrl)
         res.sendFile(path.join(__dirname, "../assets/robots.txt"))
+    }
+
+    /**
+     * Link not found will display list of links with logos instead.
+     */
+    notFoundRoute = async (req: express.Request, res: express.Response) => {
+        logger.debug("Server.notFoundRoute", req.originalUrl)
+
+        const template = fs.readFileSync(path.join(__dirname, "../assets/404.html"), "utf8")
+        const linkIds = Object.keys(linkManager.links)
+        const logoIds = []
+
+        // Check all links, and filter only the ones that have a logo image.
+        for (let id of linkIds) {
+            const imagePath = path.join(__dirname, `../assets/images/${id}.png`)
+            if (fs.existsSync(imagePath)) {
+                logoIds.push(id)
+            }
+        }
+
+        const aTags = logoIds.map((id) => `<a href="https://links.devv.com/l/${id}"><img src="/images/${id}.png" /></a>`)
+        res.send(template.replace("{{logos}}", aTags.join(" ")))
+    }
+
+    /**
+     * Send image files to the client.
+     */
+    imageRoute = async (req: express.Request, res: express.Response) => {
+        logger.debug("Server.imageRoute", req.originalUrl)
+
+        const imagePath = path.join(__dirname, `../assets/images/${req.params.filename}`)
+        if (fs.existsSync(imagePath)) {
+            res.sendFile(imagePath)
+        } else {
+            res.status(404).send("Not found")
+        }
     }
 
     /**
@@ -94,14 +129,16 @@ export class Server {
 
         if (!country) {
             country = settings.country.default
-            countryLog = "default"
+            countryLog = `default ${settings.country.default}`
         }
 
-        target = linkManager.urlFor(req.params.id, country)
+        const linkId = req.params.id
+        const sources = req.query.sources ? req.query.sources.toString().split(",") : null
+        target = linkManager.urlFor(linkId, country, sources)
 
         if (!target) {
-            target = settings.app.defaultUrl
-            logger.debug("Server.linkRoute", req.params.id, `Default URL`)
+            target = "/404"
+            logger.debug("Server.linkRoute", req.params.id, "404")
         } else {
             logger.debug("Server.linkRoute", req.params.id, target)
         }
@@ -109,30 +146,6 @@ export class Server {
         logger.info("Server.linkRoute", req.params.id, `IP: ${ip}`, `Country: ${countryLog}`, target)
 
         return res.redirect(target)
-    }
-
-    /**
-     * Search by query route.
-     */
-    searchRoute = async (req: express.Request, res: express.Response) => {
-        let searchTarget: string
-        let country = await this.getClientCountry(req)
-
-        if (!country) {
-            country = settings.country.default
-            logger.debug("Server.searchRoute", req.params.query, `Using default country`)
-        }
-
-        searchTarget = linkManager.urlSearchFor(req.params.query, country)
-
-        if (!searchTarget) {
-            searchTarget = settings.app.defaultUrl
-            logger.debug("Server.searchRoute", req.params.query, `Default URL`)
-        } else {
-            logger.debug("Server.searchRoute", req.params.query, searchTarget)
-        }
-
-        return res.redirect(searchTarget)
     }
 
     /**

@@ -4,7 +4,6 @@ import {Link} from "./types"
 import countryManager from "./countrymanager"
 import _ from "lodash"
 import fs = require("fs")
-import jaul = require("jaul")
 import path = require("path")
 import logger = require("anyhow")
 const settings = require("setmeup").settings
@@ -25,6 +24,11 @@ export class LinkManager {
      * Map of loaded links (by ID).
      */
     links: {[id: string]: Link} = {}
+
+    /**
+     * Map of link aliases.
+     */
+    aliases: {[alias: string]: string} = {}
 
     /**
      * Init by doing the initial link loading.
@@ -94,6 +98,13 @@ export class LinkManager {
                     logger.warn("LinkManager.load", filename, "Failed to load")
                 }
             }
+
+            // Load aliases from settings.
+            const aEntries = Object.entries(settings.links.aliases)
+            if (aEntries.length > 0) {
+                aEntries.forEach((e) => (e[1] as any).forEach((a) => (this.aliases[a] = e[0])))
+                logger.info("LinkManager.load", `${Object.keys(this.aliases).length} link aliases`)
+            }
         } catch (ex) {
             logger.error("LinkManager.load", ex)
         }
@@ -105,11 +116,11 @@ export class LinkManager {
      */
     loadFile = async (filepath: string): Promise<void> => {
         try {
-            const category = path.basename(filepath, ".json").toLowerCase()
+            const source = path.basename(filepath, ".json").toLowerCase()
             const data: any = fs.readFileSync(filepath, {encoding: settings.encoding})
             const entries = Object.entries(JSON.parse(data))
 
-            // Iterate file link definitions.
+            // Iterate link definitions.
             for (let [id, countryUrls] of entries) {
                 id = id.toLowerCase()
 
@@ -132,18 +143,20 @@ export class LinkManager {
                 const urlReducer = (total, arr) => total + arr.length
                 const urlCount = Object.values(countryUrls).reduce(urlReducer, 0)
                 const countryCodes = Object.keys(countryUrls).join(", ")
-                const translatedPath = filepath.replace(__dirname, "")
-                logger.info("LinkManager.loadFile", translatedPath, id, `${urlCount} links for countries ${countryCodes}`)
+                logger.info("LinkManager.loadFile", id, `${urlCount} links for countries ${countryCodes}`)
 
                 const linkData = {
                     id: id,
-                    category: category,
+                    source: source,
                     urls: countryUrls as any
                 }
 
-                // Add data to the links store, also with the category prefix.
-                this.links[id] = linkData
-                if (category != id) this.links[`${category}-${id}`] = linkData
+                // Add data to the links store.
+                if (source == id) {
+                    this.links[id] = linkData
+                } else {
+                    this.links[`${source}-${id}`] = linkData
+                }
             }
         } catch (ex) {
             logger.error("LinkManager.loadFile", filepath, ex)
@@ -155,83 +168,77 @@ export class LinkManager {
      * Get the correct URL for the specified link and country.
      * @param id Link ID.
      * @param country Country code.
+     * @param sources List of sources to get the link from, optional.
      */
-    urlFor = (id: string, country: string): string => {
+    urlFor = (id: string, country: string, sources?: string[]): string => {
+        const sourcesLog = sources?.length > 0 ? sources.join(", ") : "any source"
+
         try {
             if (!id) {
-                throw new Error("Missind link ID")
+                throw new Error("Missing link ID")
             }
+
+            const foundLinks: Link[] = []
+            const foundUrls: string[] = []
 
             // Link IDs are always treated lowercased.
             id = id.toLowerCase()
 
-            const link = this.links[id]
+            // Get link directly or from list of aliases, and if not found, check the link
+            // for each of the passed sources.
+            const directLink = this.links[id] ? this.links[id] : this.aliases[id] ? this.links[this.aliases[id]] : null
+            if (directLink) {
+                foundLinks.push(directLink)
+            } else if (sources?.length > 0) {
+                for (let source of sources) {
+                    const sourceLink = this.links[`${source}-${id}`]
+                    if (sourceLink) {
+                        foundLinks.push(sourceLink)
+                    }
+                }
+            }
 
-            // Link not found.
-            if (!link) {
+            // No link found? Stop here.
+            if (foundLinks.length == 0) {
                 logger.warn("LinkManager.urlFor", id, "Link not found")
                 return null
             }
 
-            let urls = link.urls[country]
+            // Now see if any of the links has a corresponding target for the specified country.
+            for (let link of foundLinks) {
+                let urls = link.urls[country]
 
-            // Check if specific URLs were set for the country, and if not,
-            // get a valid ALIAS for that country.
-            if (urls) {
-                logger.debug("LinkManager.urlFor", id, country, "Has direct links")
-            } else {
-                const alias = countryManager.aliases[country]
-                urls = link.urls[alias]
+                // Check if specific URLs were set for the country, and if not,
+                // get a valid alias for that country.
+                if (!urls) {
+                    const alias = countryManager.aliases[country]
+                    urls = link.urls[alias]
 
-                // Found link for country alias? If not, try finally a default link.
-                if (urls) {
-                    logger.debug("LinkManager.urlFor", id, country, `Has from a country alias: ${alias}`)
-                } else {
-                    urls = link.urls.default
+                    // Found link for country alias? If not, try finally a default link.
+                    if (urls) {
+                        logger.debug("LinkManager.urlFor", id, country, `Has from a country alias: ${alias}`)
+                    } else {
+                        urls = link.urls.default
+                    }
+                }
+
+                if (urls?.length > 0) {
+                    foundUrls.push.apply(foundUrls, urls)
                 }
             }
 
             // No links found?
-            if (!urls) {
-                logger.warn("LinkManager.urlFor", id, "Link not found")
+            if (foundUrls.length == 0) {
+                logger.warn("LinkManager.urlFor", id, "URL not found")
                 return null
             }
 
-            // Get the first or random link, depending on the randomize setting,
-            const index = settings.links.randomize ? Math.floor(Math.random() * urls.length) : 0
-            const result = urls[index]
-
-            logger.info("LinkManager.urlFor", id, country, result)
-            return urls[index]
-        } catch (ex) {
-            logger.error("LinkManager.urlFor", id, country, ex)
-            return null
-        }
-    }
-
-    /**
-     * Get the URL for the specified search query.
-     * @param query Item / text to be searched.
-     * @param country Country code.
-     */
-    urlSearchFor = (query: string, country: string): string => {
-        try {
-            if (!query) {
-                throw new Error("Missing query")
-            }
-
-            // Preprocess the query to remove and replace separators.
-            query = query.replace(/-/gi, " ").replace(/_/gi, " ").replace(/\./gi, " ")
-            query = query.replace(/  /gi, " ")
-
-            // Get search base URL for the specified country, and append the query.
-            const searchUrl = settings.search[country] ? settings.search[country] : settings.search[settings.country.default]
-            const result = jaul.data.replaceTags(searchUrl, {query: encodeURIComponent(query)})
-
-            logger.info("LinkManager.urlSearchFor", query, country)
+            // Get a link from the list.
+            const result = _.sample(foundUrls)
+            logger.info("LinkManager.urlFor", id, country, sourcesLog, result)
             return result
         } catch (ex) {
-            logger.error("LinkManager.urlSearchFor", query, country, ex)
+            logger.error("LinkManager.urlFor", id, country, sourcesLog, ex)
             return null
         }
     }

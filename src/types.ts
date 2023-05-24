@@ -5,6 +5,14 @@
  */
 export interface Link {
     id: string
-    category: string
+    source: string
     urls: {[country: string]: string[]}
+}
+
+/**
+ * Represents a target URL and its source.
+ */
+export interface SourceUrl {
+    source: string
+    url: string
 }

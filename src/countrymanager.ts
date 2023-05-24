@@ -89,7 +89,7 @@ export class CountryManager {
         try {
             apiHost = "geojs.io"
 
-            const ipUrl = `"https://get.geojs.io/v1/ip/country/${ip}.json"`
+            const ipUrl = `https://get.geojs.io/v1/ip/country/${ip}.json`
             const apiGet = bent(ipUrl, "GET", "json")
             const ipData = await apiGet()
 
