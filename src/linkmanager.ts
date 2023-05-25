@@ -1,6 +1,7 @@
 // COUNTRY LINKIFY: LINK MANAGER
 
 import {Link} from "./types"
+import {getSearchQuery} from "./utils"
 import countryManager from "./countrymanager"
 import _ from "lodash"
 import fs = require("fs")
@@ -19,6 +20,11 @@ export class LinkManager {
      * Watched files.
      */
     private watchers: fs.FSWatcher[] = []
+
+    /**
+     * List of link sources.
+     */
+    sources: string[] = []
 
     /**
      * Map of loaded links (by ID).
@@ -101,11 +107,18 @@ export class LinkManager {
                 }
             }
 
-            // Load aliases from settings.
+            // Load aliases from settings. This will populate the aliases map with their corresponding target ID.
             const aEntries = Object.entries(settings.links.aliases)
             if (aEntries.length > 0) {
-                aEntries.forEach((e) => (e[1] as any).forEach((a) => (this.aliases[a] = e[0])))
-                logger.info("LinkManager.load", `${Object.keys(this.aliases).length} link aliases`)
+                aEntries.forEach((e) =>
+                    (e[1] as any).forEach((a) => {
+                        this.aliases[a] = e[0]
+                        if (settings.links.autoPlural) {
+                            this.aliases[`${a}s`] = e[0]
+                        }
+                    })
+                )
+                logger.info("LinkManager.load", `${Object.keys(this.aliases).length} link aliases (${settings.links.autoPlural ? "with" : "no"} plurals)`)
             }
         } catch (ex) {
             logger.error("LinkManager.load", ex)
@@ -122,6 +135,10 @@ export class LinkManager {
             const data: any = fs.readFileSync(filepath, {encoding: settings.encoding})
             const entries = Object.entries(JSON.parse(data))
 
+            if (!this.sources.includes(source)) {
+                this.sources.push(source)
+            }
+
             // Iterate link definitions.
             for (let [id, countryUrls] of entries) {
                 id = id.toLowerCase()
@@ -129,7 +146,7 @@ export class LinkManager {
                 // If only a single URL was set for the link, use it as the default,
                 // otherwise append the individual per-country links.
                 if (_.isString(countryUrls)) {
-                    countryUrls = {default: [countryUrls]}
+                    countryUrls = {any: [countryUrls]}
                 } else {
                     const targets = Object.entries(countryUrls)
 
@@ -154,7 +171,7 @@ export class LinkManager {
                 }
 
                 // Add data to the links store.
-                if (source == id) {
+                if (id == "default" || id == source) {
                     this.links[id] = linkData
                 } else {
                     this.links[`${source}-${id}`] = linkData
@@ -168,12 +185,16 @@ export class LinkManager {
 
     /**
      * Get the correct URL for the specified link and country.
-     * @param id Link ID.
+     * @param id Link ID, or search terms in case of a search.
      * @param country Country code.
      * @param sources List of sources to get the link from, optional.
+     * @param search Is it a search and it accepts similar link names?
      */
-    urlFor = (id: string, country: string, sources?: string[]): string => {
+    urlFor = (id: string, country: string, sources?: string[], search?: boolean): string => {
         const sourcesLog = sources?.length > 0 ? sources.join(", ") : "any source"
+        if (!sources || sources.length == 0) {
+            sources = this.sources
+        }
 
         try {
             if (!id) {
@@ -182,18 +203,35 @@ export class LinkManager {
 
             const foundLinks: Link[] = []
             const foundUrls: string[] = []
-
             // Link IDs are always treated lowercased.
             id = id.toLowerCase()
 
             // Get link directly or from list of aliases, and if not found, check the link
-            // for each of the passed sources.
-            const directLink = this.links[id] ? this.links[id] : this.aliases[id] ? this.links[this.aliases[id]] : null
+            // for each of the passed sources. Will also check for plurals.
+            const alias = this.aliases[id]
+            const directLink = this.links[id] || this.links[alias]
             if (directLink) {
                 foundLinks.push(directLink)
             } else if (sources?.length > 0) {
                 for (let source of sources) {
-                    const sourceLink = this.links[`${source}-${id}`]
+                    let sourceLink = this.links[`${source}-${id}`] || this.links[`${source}-${alias}`]
+
+                    // Not found? Check plurals.
+                    if (!sourceLink && settings.links.autoPlural) {
+                        sourceLink = this.links[`${source}-${id}s`] || this.links[`${source}-${alias}s`]
+                    }
+
+                    // Link found!
+                    if (sourceLink) {
+                        foundLinks.push(sourceLink)
+                    }
+                }
+            }
+
+            // No direct links found yet? Fallback to search.
+            if (foundLinks.length == 0 && search) {
+                for (let source of sources) {
+                    const sourceLink = this.links[`${source}-search`]
                     if (sourceLink) {
                         foundLinks.push(sourceLink)
                     }
@@ -208,34 +246,38 @@ export class LinkManager {
 
             // Now see if any of the links has a corresponding target for the specified country.
             for (let link of foundLinks) {
-                let urls = link.urls[country]
+                let targetUrls = link.urls[country]
 
                 // Check if specific URLs were set for the country, and if not,
                 // get a valid alias for that country.
-                if (!urls) {
+                if (!targetUrls) {
                     const alias = countryManager.aliases[country]
-                    urls = link.urls[alias]
+                    targetUrls = link.urls[alias]
 
-                    // Found link for country alias? If not, try finally a default link.
-                    if (urls) {
+                    // Found link for country alias? If not, try the default link for any country.
+                    if (targetUrls) {
                         logger.debug("LinkManager.urlFor", id, country, `Has from a country alias: ${alias}`)
                     } else {
-                        urls = link.urls.default
+                        targetUrls = link.urls.any
                     }
                 }
 
-                if (urls?.length > 0) {
-                    foundUrls.push.apply(foundUrls, urls)
+                // If it's a search term, replace the {{query}} with the processed value from the ID.
+                if (targetUrls?.length > 0) {
+                    if (search) {
+                        targetUrls = targetUrls.map((u) => u.replace("{{query}}", getSearchQuery(id, link.source)))
+                    }
+                    foundUrls.push.apply(foundUrls, targetUrls)
                 }
             }
 
             // No links found?
             if (foundUrls.length == 0) {
-                logger.warn("LinkManager.urlFor", id, "URL not found")
+                logger.warn("LinkManager.urlFor", id, `${search ? "Search" : "Link"} not found`)
                 return null
             }
 
-            // Get a link from the list.
+            // Get a link from the list. If searching, replace the {{query}} tag with the searched value (id).
             const result = _.sample(foundUrls)
             logger.info("LinkManager.urlFor", id, country, sourcesLog, result)
             return result

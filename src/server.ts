@@ -55,9 +55,10 @@ export class Server {
         this.app.get(`/404`, this.notFoundRoute)
         this.app.get(`/images/:filename`, this.imageRoute)
 
-        // API and links.
+        // API for direct links and search.
         this.app.get(`/${settings.server.apiKey}/list`, this.apiListRoute)
         this.app.get(`/l/:id`, this.linkRoute)
+        this.app.get(`/s/:search`, this.linkRoute)
 
         // Start the server.
         this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
@@ -127,14 +128,16 @@ export class Server {
         let country = await this.getClientCountry(req, ip)
         let countryLog = country
 
+        // Could not fetch country? Use the default.
         if (!country) {
             country = settings.country.default
             countryLog = `default ${settings.country.default}`
         }
 
-        const linkId = req.params.id
+        const search = req.params.search
+        const linkId = decodeURIComponent(req.params.id || search)
         const sources = req.query.sources ? req.query.sources.toString().split(",") : null
-        target = linkManager.urlFor(linkId, country, sources)
+        target = linkManager.urlFor(linkId, country, sources, search ? true : false)
 
         if (!target) {
             target = "/404"
@@ -216,7 +219,7 @@ export class Server {
     getClientCountry = async (req: express.Request, ip?: string): Promise<string> => {
         if (!ip) ip = this.getClientIP(req)
 
-        // WHen running locally, return default country.
+        // When running locally, return default country.
         if (!ip || ip.includes("127.0.0.1")) {
             return settings.country.default
         }
