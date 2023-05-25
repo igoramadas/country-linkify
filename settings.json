@@ -8,8 +8,10 @@
         // Application title.
         "title": "Country Linkify"
     },
-    // If country can't be determined or there's no link for the user's country.
     "country": {
+        // Cache country for IP results for up to 30 minutes.
+        "cacheDuration": 900,
+        // If country can't be determined or there's no link for the user's country, use these aliases.
         "default": "us",
         "es": ["mt", "pt"],
         "de": ["at", "be", "ch", "cz", "dk", "ee", "gi", "fi", "fr", "hu", "ie", "it", "nl", "no", "pl", "se", "sk"]
@@ -17,6 +19,8 @@
     "links": {
         // Auto reload links when the JSON files change. Set to false to disable.
         "autoReload": true,
+        // Also check for plural names when matching link IDs.
+        "autoPlural": true,
         // Link aliases.
         "aliases": {
             "bike": ["bicycle"],
