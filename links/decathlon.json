@@ -1,8 +1,13 @@
 {
-    "decathlon": {
+    "default": {
         "de": "https://www.awin1.com/cread.php?awinmid=14353&awinaffid=931009",
         "it": "https://www.awin1.com/cread.php?awinmid=9643&awinaffid=931009"
     },
+    "search": {
+        "de": "https://www.awin1.com/cread.php?awinmid=14353&awinaffid=931009&ued=https%3A%2F%2Fwww.decathlon.de%2Fsearch%3FNtt%3D{{query}}",
+        "it": "https://www.awin1.com/cread.php?awinmid=9643&awinaffid=931009&ued=https%3A%2F%2Fwww.decathlon.it%2Fsearch%3FNtt%3D{{query}}"
+    },
+
     "cycling-components": {
         "de": "https://tidd.ly/3WyTH8y",
         "it": "https://tidd.ly/3IDKLJh"
