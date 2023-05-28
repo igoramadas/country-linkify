@@ -172,7 +172,7 @@ export class LinkManager {
 
                 // Add data to the links store.
                 if (id == "default" || id == source) {
-                    this.links[id] = linkData
+                    this.links[source] = linkData
                 } else {
                     this.links[`${source}-${id}`] = linkData
                 }
