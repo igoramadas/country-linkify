@@ -8,8 +8,36 @@
         "it": "https://www.awin1.com/cread.php?awinmid=9643&awinaffid=931009&ued=https%3A%2F%2Fwww.decathlon.it%2Fsearch%3FNtt%3D{{query}}"
     },
 
+    "cassette": {
+        "de": "https://tidd.ly/43sugaS",
+        "it": "https://tidd.ly/3ozQxoz"
+    },
+    "chain": {
+        "de": "https://tidd.ly/3N2JVs7",
+        "it": "https://tidd.ly/3OFImlc"
+    },
     "cycling-components": {
         "de": "https://tidd.ly/3WyTH8y",
         "it": "https://tidd.ly/3IDKLJh"
+    },
+    "gravel-bike": {
+        "de": "https://tidd.ly/3IOZ3Xv",
+        "it": "https://tidd.ly/3IIa90E"
+    },
+    "mtb": {
+        "de": "https://tidd.ly/43yu1Lv",
+        "it": "https://tidd.ly/3N2ihvf"
+    },
+    "road-bike": {
+        "de": "https://tidd.ly/3MEpd0d",
+        "it": "https://tidd.ly/3WCchNb"
+    },
+    "tire": {
+        "de": "https://tidd.ly/3MF1pta",
+        "it": "https://tidd.ly/3N5rHq5"
+    },
+    "wheels": {
+        "de": "https://tidd.ly/3qbT1K1",
+        "it": "https://tidd.ly/43dvVkO"
     }
 }

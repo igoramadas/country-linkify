@@ -27,6 +27,7 @@
             "e-bike": ["electric-bike"],
             "inner-tube": ["tpu-inner-tube"],
             "gravel-bike": ["cx-bike"],
+            "mtb": ["mountain-bike"],
             "road-bike": ["racing-bike"],
             "tire": ["tyre", "front-tire", "rear-tire"]
         }
