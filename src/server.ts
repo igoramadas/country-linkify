@@ -5,6 +5,7 @@ import linkManager from "./linkmanager"
 import express = require("express")
 import fs = require("fs")
 import logger = require("anyhow")
+import jaul = require("jaul")
 import path = require("path")
 const settings = require("setmeup").settings
 
@@ -51,14 +52,15 @@ export class Server {
 
         // Static routes.
         this.app.get(`/`, this.indexRoute)
-        this.app.get("/robots.txt", this.robotsRoute)
         this.app.get(`/404`, this.notFoundRoute)
-        this.app.get(`/images/:filename`, this.imageRoute)
 
         // API for direct links and search.
         this.app.get(`/${settings.server.apiKey}/list`, this.apiListRoute)
         this.app.get(`/l/:id`, this.linkRoute)
         this.app.get(`/s/:search`, this.linkRoute)
+
+        // Static files.
+        this.app.use(express.static(path.join(__dirname, "../assets")))
 
         // Start the server.
         this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
@@ -73,14 +75,6 @@ export class Server {
     indexRoute = async (req: express.Request, res: express.Response) => {
         logger.debug("Server.indexRoute", req.originalUrl)
         res.redirect(settings.app.homeUrl || "/404")
-    }
-
-    /**
-     * Robots.txt route.
-     */
-    robotsRoute = async (req: express.Request, res: express.Response) => {
-        logger.debug("Server.robotsRoute", req.originalUrl)
-        res.sendFile(path.join(__dirname, "../assets/robots.txt"))
     }
 
     /**
@@ -102,28 +96,13 @@ export class Server {
         }
 
         const aTags = logoIds.map((id) => `<a href="https://links.devv.com/l/${id}"><img src="/images/${id}.png" /></a>`)
-        res.send(template.replace("{{logos}}", aTags.join(" ")))
-    }
-
-    /**
-     * Send image files to the client.
-     */
-    imageRoute = async (req: express.Request, res: express.Response) => {
-        logger.debug("Server.imageRoute", req.originalUrl)
-
-        const imagePath = path.join(__dirname, `../assets/images/${req.params.filename}`)
-        if (fs.existsSync(imagePath)) {
-            res.sendFile(imagePath)
-        } else {
-            res.status(404).send("Not found")
-        }
+        res.send(jaul.data.replaceTags(template, {logos: aTags.join(" ")}))
     }
 
     /**
      * Main link redirection route.
      */
     linkRoute = async (req: express.Request, res: express.Response) => {
-        let target: string
         let ip = this.getClientIP(req)
         let country = await this.getClientCountry(req, ip)
         let countryLog = country
@@ -137,18 +116,34 @@ export class Server {
         const search = req.params.search
         const linkId = decodeURIComponent(req.params.id || search)
         const sources = req.query.sources ? req.query.sources.toString().split(",") : null
-        target = linkManager.urlFor(linkId, country, sources, search ? true : false)
+        const target = linkManager.urlFor(linkId, country, sources, search ? true : false)
 
         if (!target) {
-            target = "/404"
             logger.debug("Server.linkRoute", req.params.id, "404")
-        } else {
-            logger.debug("Server.linkRoute", req.params.id, target)
+            res.redirect("/404")
+            return
         }
 
-        logger.info("Server.linkRoute", req.params.id, `IP: ${ip}`, `Country: ${countryLog}`, target)
+        logger.debug("Server.linkRoute", req.params.id, target)
 
-        return res.redirect(target)
+        // Redirect straight away unless the rn query is set.
+        if (req.query.rn != "1") {
+            logger.info("Server.linkRoute", req.params.id, `IP: ${ip}`, `Country: ${countryLog}`, target.source, target.url)
+            res.redirect(target ? target.url : "/404")
+            return
+        }
+
+        const template = fs.readFileSync(path.join(__dirname, "../assets/redir.html"), "utf8")
+        const tags = {
+            from: req.query.from || "Devv",
+            target: target.source,
+            url: target.url,
+            logo: fs.existsSync(path.join(__dirname, `../assets/images/${target.source}.png`)) ? target.source : "nologo"
+        }
+
+        // Send template with replaced tags to the client.
+        logger.info("Server.linkRoute", req.params.id, `IP: ${ip}`, `Country: ${countryLog}`, "Redirection notice", target.source, target.url)
+        res.send(jaul.data.replaceTags(template, tags))
     }
 
     /**

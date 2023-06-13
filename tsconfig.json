@@ -6,6 +6,7 @@
         "target": "ES2022",
         "module": "CommonJS",
         "moduleResolution": "Node",
+        "skipLibCheck": true,
         "esModuleInterop": true,
         "noUnusedParameters": true,
         "noUnusedLocals": true,

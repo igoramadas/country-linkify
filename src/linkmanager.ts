@@ -1,6 +1,6 @@
 // COUNTRY LINKIFY: LINK MANAGER
 
-import {Link} from "./types"
+import {Link, TargetURL} from "./types"
 import {getSearchQuery} from "./utils"
 import countryManager from "./countrymanager"
 import _ from "lodash"
@@ -184,13 +184,13 @@ export class LinkManager {
     }
 
     /**
-     * Get the correct URL for the specified link and country.
+     * Get the target URL for the specified link and country.
      * @param id Link ID, or search terms in case of a search.
      * @param country Country code.
-     * @param sources List of sources to get the link from, optional.
+     * @param sources List of sources to get the link from, optional, defaults to all.
      * @param search Is it a search and it accepts similar link names?
      */
-    urlFor = (id: string, country: string, sources?: string[], search?: boolean): string => {
+    urlFor = (id: string, country: string, sources?: string[], search?: boolean): TargetURL => {
         const sourcesLog = sources?.length > 0 ? sources.join(", ") : "any source"
         if (!sources || sources.length == 0) {
             sources = this.sources
@@ -202,7 +202,7 @@ export class LinkManager {
             }
 
             const foundLinks: Link[] = []
-            const foundUrls: string[] = []
+
             // Link IDs are always treated lowercased.
             id = id.toLowerCase()
 
@@ -244,42 +244,29 @@ export class LinkManager {
                 return null
             }
 
-            // Now see if any of the links has a corresponding target for the specified country.
-            for (let link of foundLinks) {
-                let targetUrls = link.urls[country]
-
-                // Check if specific URLs were set for the country, and if not,
-                // get a valid alias for that country.
-                if (!targetUrls) {
-                    const alias = countryManager.aliases[country]
-                    targetUrls = link.urls[alias]
-
-                    // Found link for country alias? If not, try the default link for any country.
-                    if (targetUrls) {
-                        logger.debug("LinkManager.urlFor", id, country, `Has from a country alias: ${alias}`)
-                    } else {
-                        targetUrls = link.urls.any
-                    }
-                }
-
-                // If it's a search term, replace the {{query}} with the processed value from the ID.
-                if (targetUrls?.length > 0) {
-                    if (search) {
-                        targetUrls = targetUrls.map((u) => u.replace("{{query}}", getSearchQuery(id, link.source)))
-                    }
-                    foundUrls.push.apply(foundUrls, targetUrls)
-                }
-            }
+            // Filter only links relevant to the specified country.
+            const countryAlias = countryManager.aliases[country]
+            const countryLinks = foundLinks.filter((link) => link.urls[country] || link.urls[countryAlias] || link.urls.any)
 
             // No links found?
-            if (foundUrls.length == 0) {
-                logger.warn("LinkManager.urlFor", id, `${search ? "Search" : "Link"} not found`)
+            if (countryLinks.length == 0) {
+                logger.warn("LinkManager.urlFor", id, `${search ? "Search" : "Link"} not found for country ${country}`)
                 return null
             }
 
-            // Get a link from the list. If searching, replace the {{query}} tag with the searched value (id).
-            const result = _.sample(foundUrls)
-            logger.info("LinkManager.urlFor", id, country, sourcesLog, result)
+            // Generate the target URL.
+            const singleLink = _.sample(countryLinks)
+            const result: TargetURL = {
+                url: _.sample(singleLink.urls[country] || singleLink.urls[countryAlias] || singleLink.urls.any),
+                source: singleLink.source
+            }
+
+            // If it's a search, replace the query tag.
+            if (search) {
+                result.url = result.url.replace("{{query}}", getSearchQuery(id, result.source))
+            }
+
+            logger.info("LinkManager.urlFor", id, country, sourcesLog, result.url)
             return result
         } catch (ex) {
             logger.error("LinkManager.urlFor", id, country, sourcesLog, ex)
