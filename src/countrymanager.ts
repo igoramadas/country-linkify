@@ -2,8 +2,8 @@
 
 import _ from "lodash"
 import bent = require("bent")
-import cache = require("bitecache")
-import logger = require("anyhow")
+import cache from "bitecache"
+import logger from "anyhow"
 const settings = require("setmeup").settings
 const cacheName = "ip-country"
 

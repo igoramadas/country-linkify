@@ -6,7 +6,7 @@ import countryManager from "./countrymanager"
 import _ from "lodash"
 import fs = require("fs")
 import path = require("path")
-import logger = require("anyhow")
+import logger from "anyhow"
 const settings = require("setmeup").settings
 
 export class LinkManager {

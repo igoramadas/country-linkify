@@ -4,8 +4,8 @@ import countryManager from "./countrymanager"
 import linkManager from "./linkmanager"
 import express = require("express")
 import fs = require("fs")
-import logger = require("anyhow")
-import jaul = require("jaul")
+import logger from "anyhow"
+import jaul from "jaul"
 import path = require("path")
 const settings = require("setmeup").settings
 

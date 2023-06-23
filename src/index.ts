@@ -5,7 +5,7 @@ if (!process.env.NODE_ENV) {
 }
 
 // Setup the logger.
-import logger = require("anyhow")
+import logger from "anyhow"
 logger.setup("console")
 logger.setOptions({
     appName: "Country Linkify",
