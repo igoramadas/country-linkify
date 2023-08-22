@@ -1,0 +1,36 @@
+{
+    "default": {
+        "uk": "https://www.awin1.com/cread.php?awinmid=1857&awinaffid=931009"
+    },
+    "search": {
+        "uk": "https://www.awin1.com/cread.php?awinmid=1857&awinaffid=931009&ued=https%3A%2F%2Fwww.wiggle.com%2Fsearch%3Fquery%3D{{query}}"
+    },
+
+    "cassette": {
+        "uk": "https://tidd.ly/3E8jfku"
+    },
+    "chain": {
+        "uk": "https://tidd.ly/3Ec8lKk"
+    },
+    "cycling-components": {
+        "uk": "https://tidd.ly/3sml9LF"
+    },
+    "gravel-bike": {
+        "uk": "https://tidd.ly/45GGsWv"
+    },
+    "inner-tube": {
+        "uk": "https://tidd.ly/44lsKaJ"
+    },
+    "mtb": {
+        "uk": "https://tidd.ly/3YSs9Mv"
+    },
+    "road-bike": {
+        "uk": "https://tidd.ly/44ffG6E"
+    },
+    "tire": {
+        "uk": "https://tidd.ly/47Aq9MO"
+    },
+    "wheels": {
+        "uk": "https://tidd.ly/47Jd1oB"
+    }
+}
