@@ -24,12 +24,12 @@
         // Link aliases.
         "aliases": {
             "bike": ["bicycle"],
-            "e-bike": ["electric-bike"],
-            "inner-tube": ["tpu-inner-tube"],
-            "gravel-bike": ["cx-bike"],
-            "mtb": ["mountain-bike"],
-            "road-bike": ["racing-bike"],
-            "tire": ["tyre", "front-tire", "rear-tire"]
+            "e-bike": ["ebike", "electric-bike"],
+            "inner-tube": ["tpu-inner-tube", "latex-inner-tube"],
+            "gravel-bike": ["cx-bike", "cyclocross-bike"],
+            "mtb": ["mountainbike", "mountain-bike"],
+            "road-bike": ["race-bike", "racing-bike"],
+            "tire": ["tyre", "front-tire", "rear-tire", "front-tyre", "rear-tyre"]
         }
     },
     // Default encoding is set to UTF-8.
