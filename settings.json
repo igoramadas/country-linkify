@@ -14,7 +14,8 @@
         // If country can't be determined or there's no link for the user's country, use these aliases.
         "default": "us",
         "es": ["mt", "pt"],
-        "de": ["at", "be", "ch", "cz", "dk", "ee", "gi", "fi", "fr", "hu", "ie", "it", "nl", "no", "pl", "se", "sk"]
+        "de": ["at", "be", "ch", "cz", "dk", "ee", "gi", "fi", "fr", "hu", "ie", "it", "nl", "no", "pl", "se", "sk"],
+        "uk": ["gb"]
     },
     "links": {
         // Auto reload links when the JSON files change. Set to false to disable.
