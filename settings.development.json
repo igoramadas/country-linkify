@@ -1,16 +1,18 @@
 // COUNTRY LINKIFY SETTINGS (DEVELOPMENT)
 
 {
-    // Debugging is active on dev.
-    "debug": true,
-    // Server options on dev.
-    "server": {
-        "url": "http://linkify.local:3579/",
-        // API identified, by default it's "api" meaning API endpoints will be available at /api/.
-        "apiKey": "api",
-        // Bearer token to be passed for authentication.
-        "apiToken": "123",
-        // Server port on dev.
-        "port": 3579
+    "countryLinkify": {
+        // Debugging is active on dev.
+        "debug": true,
+        // Server options on dev.
+        "server": {
+            "url": "http://linkify.local:3579/",
+            // API identifier, by default it's "api" meaning Admin API endpoints will be available at /api/.
+            "apiKey": "api",
+            // Bearer token to be passed for authentication.
+            "apiToken": "123",
+            // Server port on dev.
+            "port": 3579
+        }
     }
 }

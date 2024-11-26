@@ -4,10 +4,10 @@ import {Link, TargetURL} from "./types"
 import {getSearchQuery} from "./utils"
 import countryManager from "./countrymanager"
 import _ from "lodash"
-import fs = require("fs")
-import path = require("path")
+import fs from "fs"
+import path from "path"
 import logger from "anyhow"
-const settings = require("setmeup").settings
+let settings
 
 export class LinkManager {
     private constructor() {}
@@ -40,6 +40,8 @@ export class LinkManager {
      * Init by doing the initial link loading.
      */
     init = async (): Promise<void> => {
+        settings = require("setmeup").settings.countryLinkify
+
         try {
             await this.load()
         } catch (ex) {
@@ -49,13 +51,18 @@ export class LinkManager {
     }
 
     /**
-     * Load links from files under the /links folder.
+     * Load links from files under the links folder.
      * @param reset If true, will clear the links cache before loading.
      */
     load = async (reset?: boolean): Promise<void> => {
         try {
-            const diretory = path.join(__dirname, "../links")
-            const files = fs.readdirSync(diretory)
+            const directory = settings.links.path.substring(0, 1) == "/" ? settings.links.path : path.join(process.cwd(), settings.links.path)
+            if (!fs.existsSync(directory)) {
+                logger.warn("LinkManager.load", `Directory ${directory} not found, no links were loaded`)
+                return
+            }
+
+            const files = fs.readdirSync(directory)
 
             // Reset before loading.
             if (reset) {
@@ -81,7 +88,7 @@ export class LinkManager {
             // Iterate files on /links, each file is considered a category.
             for (let filename of files) {
                 try {
-                    const filepath = path.join(diretory, filename)
+                    const filepath = path.join(directory, filename)
                     await this.loadFile(filepath)
 
                     // Auto reload files when they change?
@@ -91,7 +98,7 @@ export class LinkManager {
                                 const basename = path.basename(changedfile, ".json")
 
                                 try {
-                                    changedfile = path.join(diretory, changedfile)
+                                    changedfile = path.join(directory, changedfile)
                                     logger.info("LinkManager.load.watch", basename, "Reloading")
                                     await this.loadFile(changedfile)
                                 } catch (ex) {
@@ -118,6 +125,7 @@ export class LinkManager {
                         }
                     })
                 )
+
                 logger.info("LinkManager.load", `${Object.keys(this.aliases).length} link aliases (${settings.links.autoPlural ? "with" : "no"} plurals)`)
             }
         } catch (ex) {

@@ -1,38 +1,52 @@
 // COUNTRY LINKIFY DEFAULT SETTINGS
 
 {
-    "app": {
-        // Homepage should redirect to this URL. If set to "null",
-        // it will display all links with logos instead.
-        "homeUrl": "https://devv.com/",
-        // Application title.
-        "title": "Country Linkify"
-    },
-    "country": {
-        // Cache country for IP results for up to 30 minutes.
-        "cacheDuration": 900,
-        // If country can't be determined or there's no link for the user's country, use these aliases.
-        "default": "us",
-        "es": ["mt", "pt"],
-        "de": ["at", "be", "ch", "cz", "dk", "ee", "gi", "fi", "fr", "hu", "ie", "it", "nl", "no", "pl", "se", "sk"],
-        "uk": ["gb"]
-    },
-    "links": {
-        // Auto reload links when the JSON files change. Set to false to disable.
-        "autoReload": true,
-        // Also check for plural names when matching link IDs.
-        "autoPlural": true,
-        // Link aliases.
-        "aliases": {
-            "bike": ["bicycle"],
-            "e-bike": ["ebike", "electric-bike"],
-            "inner-tube": ["tpu-inner-tube", "latex-inner-tube"],
-            "gravel-bike": ["cx-bike", "cyclocross-bike"],
-            "mtb": ["mountainbike", "mountain-bike"],
-            "road-bike": ["race-bike", "racing-bike"],
-            "tire": ["tyre", "front-tire", "rear-tire", "front-tyre", "rear-tyre"]
-        }
-    },
-    // Default encoding is set to UTF-8.
-    "encoding": "utf8"
+    "countryLinkify": {
+        "app": {
+            // Homepage should redirect to this URL. If set to "null",
+            // it will display all links with logos instead.
+            "homeUrl": null,
+            // Application title.
+            "title": "Country Linkify"
+        },
+        "country": {
+            // Cache country for IP results for up to 30 minutes.
+            "cacheDuration": 900,
+            // Default country.
+            "default": "us"
+            // If country can't be determined or there's no link for the user's country, you can add
+            // aliases / target countries here. For example, the following will set Spain as default
+            // for Portuguese users, Germany for Austrian and Swiss users, and United Kingdom for Great Britain.
+            // "es": ["pt"]
+            // "de": ["at", "ch"]
+            // "uk": ["gb"]
+        },
+        "links": {
+            // Default folder is /links on the application root. This can also be set to an absolute path.
+            "path": "./links",
+            // Auto reload links when the JSON files change. Set to false to disable.
+            "autoReload": true,
+            // Also check for plural names when matching link IDs.
+            "autoPlural": true,
+            // Link aliases.
+            // Sample: "light": ["led", "bulb"]
+            "aliases": {}
+        },
+        "server": {
+            // Base server URL, can be left as null if using as part of another website / app.
+            // Must be set when running in standalone mode.
+            "url": null,
+            // Server port, required if the url above is also set.
+            "port": null,
+            // Admin API key used as part of the API endpoint. For example if you set this to "my-api"
+            // then the Admin API will be available at /my-api/.
+            "apiKey": null,
+            // Bearer token to be passed on Admin API requests.
+            "apiToken": null
+        },
+        // Name of the bitecache collection.
+        "cacheName": "ip-country",
+        // Default encoding is set to UTF-8.
+        "encoding": "utf8"
+    }
 }

@@ -1,0 +1,36 @@
+// COUNTRY LINKIFY SETTINGS (PRODUCTION SAMPLE)
+
+{
+    "countryLinkify": {
+        "app": {
+            // Homepage should redirect to devv.com.
+            "homeUrl": "https://devv.com/",
+            // Application title.
+            "title": "My Links"
+        },
+        "country": {
+            // Set default country to Brazil, and add some aliases.
+            "default": "br",
+            "es": ["mt", "pt"],
+            "de": ["at", "be", "ch", "cz", "dk", "ee", "gi", "fi", "fr", "hu", "ie", "it", "nl", "no", "pl", "se", "sk"],
+            "uk": ["gb"],
+            "us": ["ca"]
+        },
+        "links": {
+            // Cycling aliases.
+            "aliases": {
+                "bike": ["bicycle"],
+                "tire": ["tyre"]
+            }
+        },
+        // Server options on prod.
+        "server": {
+            "url": "https://links.devv.com/",
+            "port": 8080,
+            // Admin API base endpoint should be https://links.devv.com/secret-api/.
+            "apiKey": "secret-api",
+            // Admin API bearer token.
+            "apiToken": "some-token"
+        }
+    }
+}

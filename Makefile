@@ -7,7 +7,7 @@ build:
 
 # Run the app locally.
 run: build
-	node lib/index.js
+	npm run start
 
 # Generate docs.
 docs:

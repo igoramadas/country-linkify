@@ -4,8 +4,7 @@ import _ from "lodash"
 import bent = require("bent")
 import cache from "bitecache"
 import logger from "anyhow"
-const settings = require("setmeup").settings
-const cacheName = "ip-country"
+let settings
 
 export class CountryManager {
     private constructor() {}
@@ -23,11 +22,13 @@ export class CountryManager {
      * Init by loading the country aliases.
      */
     init = async (): Promise<void> => {
+        settings = require("setmeup").settings.countryLinkify
+
         try {
             await this.load()
 
             // Setup the cache.
-            cache.setup(cacheName, settings.country.cacheDuration)
+            cache.setup(settings.cacheName, settings.country.cacheDuration)
         } catch (ex) {
             logger.error("CountryManager.init", "Failed to init", ex)
             throw ex
@@ -72,7 +73,7 @@ export class CountryManager {
         }
 
         // Check if country is cached.
-        const cached = cache.get(cacheName, ip)
+        const cached = cache.get(settings.cacheName, ip)
         if (cached) {
             logger.debug("CountryManager.getForIP", ip, "From cache")
             return cached
@@ -92,7 +93,7 @@ export class CountryManager {
             if (ipData && ipData.country) {
                 logger.debug("CountryManager.getForIP", ip, ipData.country, `Via ${apiHost}`)
                 const result = ipData.country.toLowerCase()
-                cache.set(cacheName, ip, result)
+                cache.set(settings.cacheName, ip, result)
                 return result
             }
         } catch (ex) {
@@ -110,7 +111,7 @@ export class CountryManager {
             if (ipData && ipData.countryCode) {
                 logger.debug("CountryManager.getForIP", ip, ipData.countryCode, `Via ${apiHost}`)
                 const result = ipData.countryCode.toLowerCase()
-                cache.set(cacheName, ip, result)
+                cache.set(settings.cacheName, ip, result)
                 return result
             }
         } catch (ex) {

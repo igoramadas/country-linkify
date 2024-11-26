@@ -1,9 +1,0 @@
-// COUNTRY LINKIFY SETTINGS (PRODUCTION)
-
-{
-    // Server options on prod. The "apiKey" and "apiToken" must be set via environment variables.
-    "server": {
-        "url": "https://links.devv.com/",
-        "port": 8080
-    }
-}

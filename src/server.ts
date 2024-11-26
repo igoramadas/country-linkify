@@ -2,12 +2,12 @@
 
 import countryManager from "./countrymanager"
 import linkManager from "./linkmanager"
-import express = require("express")
-import fs = require("fs")
+import fs from "fs"
 import logger from "anyhow"
 import jaul from "jaul"
-import path = require("path")
-const settings = require("setmeup").settings
+import path from "path"
+import express = require("express")
+let settings
 
 export class Server {
     private constructor() {}
@@ -23,14 +23,12 @@ export class Server {
 
     /**
      * Setup the routes and start the HTTP server.
+     * @param app The Express app to bind routes to.
+     * @basePath The base URL path, should end with "/", defaults to "/".
      */
-    init = async (): Promise<void> => {
-        if (!settings.server.url) {
-            throw new Error(`Missing "server.url" on settings`)
-        }
-        if (!settings.server.port) {
-            throw new Error(`The "server.port" must be a valid port number`)
-        }
+    init = async (app?: express.Express, basePath?: string): Promise<void> => {
+        settings = require("setmeup").settings.countryLinkify
+
         if (!settings.server.apiKey) {
             throw new Error(`Missing "server.apiKey" on settings`)
         }
@@ -38,32 +36,36 @@ export class Server {
             throw new Error(`Missing "server.apiToken" on settings`)
         }
 
-        this.app = express()
-
-        // Log all request if debug is enabled.
-        if (settings.debug) {
-            const routeLogger = (_req, _res, _next) => {
-                logger.debug("Server.route", _req.originalUrl)
-                _next()
+        if (!app) {
+            if (!settings.server.url) {
+                throw new Error(`Missing "server.url" on settings`)
             }
+            if (!settings.server.port) {
+                throw new Error(`The "server.port" must be a valid port number`)
+            }
+            this.app = express()
+        } else {
+            this.app = app
+        }
 
-            this.app.use("*", routeLogger)
+        if (!basePath) {
+            basePath = "/"
         }
 
         // Static routes.
-        this.app.get(`/`, this.indexRoute)
-        this.app.get(`/404`, this.notFoundRoute)
+        this.app.use(basePath, express.static(path.join(__dirname, "../assets")))
+        this.app.get(basePath, this.indexRoute)
+        this.app.get(`${basePath}404`, this.notFoundRoute)
 
         // API for direct links and search.
-        this.app.get(`/${settings.server.apiKey}/list`, this.apiListRoute)
-        this.app.get(`/l/:id`, this.linkRoute)
-        this.app.get(`/s/:search`, this.linkRoute)
+        this.app.get(`${basePath}${settings.server.apiKey}/list`, this.apiListRoute)
+        this.app.get(`${basePath}l/:id`, this.linkRoute)
+        this.app.get(`${basePath}s/:search`, this.linkRoute)
 
-        // Static files.
-        this.app.use(express.static(path.join(__dirname, "../assets")))
-
-        // Start the server.
-        this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
+        // Create a standalone server if one was not passed.
+        if (!app) {
+            this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
+        }
     }
 
     // ROUTES
