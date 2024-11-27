@@ -26,7 +26,7 @@ export class Server {
      * @param app The Express app to bind routes to.
      * @basePath The base URL path, should end with "/", defaults to "/".
      */
-    init = async (app?: express.Express, basePath?: string): Promise<void> => {
+    init = async (app?: express.Express): Promise<void> => {
         settings = require("setmeup").settings.countryLinkify
 
         if (!settings.server.apiKey) {
@@ -48,9 +48,7 @@ export class Server {
             this.app = app
         }
 
-        if (!basePath) {
-            basePath = "/"
-        }
+        const basePath = settings.server.basePath
 
         // Static routes.
         this.app.use(basePath, express.static(path.join(__dirname, "../assets")))
@@ -64,7 +62,9 @@ export class Server {
 
         // Create a standalone server if one was not passed.
         if (!app) {
-            this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}`))
+            this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}, bound to ${basePath}`))
+        } else {
+            logger.info("Server", `Bound to ${basePath}`)
         }
     }
 

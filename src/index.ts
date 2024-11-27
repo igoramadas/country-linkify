@@ -13,10 +13,11 @@ const startup = async (app?: express.Express) => {
     logger.info("CountryLinkify.startup", `PID ${process.pid}`)
 
     try {
+        setmeup.load(__dirname + "/../settings.default.json", {overwrite: false})
+
         if (!setmeup.settings.countryLinkify) {
-            setmeup.load()
             setmeup.loadFromEnv()
-            setmeup.load("settings.local.json")
+            setmeup.load(__dirname + "/../settings.local.json")
         }
 
         // Start everything.

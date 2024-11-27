@@ -114,6 +114,8 @@ export class LinkManager {
                 }
             }
 
+            logger.info("LinkManager.load", `${Object.keys(this.links).length} links loaded`)
+
             // Load aliases from settings. This will populate the aliases map with their corresponding target ID.
             const aEntries = Object.entries(settings.links.aliases)
             if (aEntries.length > 0) {
@@ -126,7 +128,7 @@ export class LinkManager {
                     })
                 )
 
-                logger.info("LinkManager.load", `${Object.keys(this.aliases).length} link aliases (${settings.links.autoPlural ? "with" : "no"} plurals)`)
+                logger.info("LinkManager.load", `${Object.keys(this.aliases).length} aliases loaded (${settings.links.autoPlural ? "with" : "no"} plurals)`)
             }
         } catch (ex) {
             logger.error("LinkManager.load", ex)
@@ -170,7 +172,7 @@ export class LinkManager {
                 const urlReducer = (total, arr) => total + arr.length
                 const urlCount = Object.values(countryUrls).reduce(urlReducer, 0)
                 const countryCodes = Object.keys(countryUrls).join(", ")
-                logger.info("LinkManager.loadFile", id, `${urlCount} links for countries ${countryCodes}`)
+                logger.debug("LinkManager.loadFile", id, `${urlCount} links for countries ${countryCodes}`)
 
                 const linkData = {
                     id: id,
