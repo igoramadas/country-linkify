@@ -21,8 +21,12 @@
             // "de": ["at", "ch"]
             // "uk": ["gb"]
         },
+        "images": {
+            // Path to where the link images / logos are stored. Defaults to /images on the application root.
+            "path": "./images"
+        },
         "links": {
-            // Default folder is /links on the application root. This can also be set to an absolute path.
+            // Path to where link JSON files are stored. Defaults to /links on the application root.
             "path": "./links",
             // Auto reload links when the JSON files change. Set to false to disable.
             "autoReload": true,
@@ -35,6 +39,8 @@
         "server": {
             // Base path where links should be served from. Defaults to the root of the web server "/".
             "basePath": "/",
+            // Base path where the link logos are served from. Defaults to "/images/".
+            "imagesPath": "/images/",
             // Base server URL, can be left as null if using as part of another website / app.
             // Must be set when running in standalone mode.
             "url": null,

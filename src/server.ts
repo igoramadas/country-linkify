@@ -50,18 +50,16 @@ export class Server {
 
         const basePath = settings.server.basePath
 
-        // Static routes.
-        this.app.use(basePath, express.static(path.join(__dirname, "../assets")))
+        // Main routes.
         this.app.get(basePath, this.indexRoute)
         this.app.get(`${basePath}404`, this.notFoundRoute)
-
-        // API for direct links and search.
         this.app.get(`${basePath}${settings.server.apiKey}/list`, this.apiListRoute)
         this.app.get(`${basePath}l/:id`, this.linkRoute)
         this.app.get(`${basePath}s/:search`, this.linkRoute)
 
         // Create a standalone server if one was not passed.
         if (!app) {
+            this.app.use(basePath, express.static(path.join(__dirname, "../assets")))
             this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}, bound to ${basePath}`))
         } else {
             logger.info("Server", `Bound to ${basePath}`)
@@ -76,7 +74,7 @@ export class Server {
      */
     indexRoute = async (req: express.Request, res: express.Response) => {
         logger.debug("Server.indexRoute", req.originalUrl)
-        res.redirect(settings.app.homeUrl || "/404")
+        res.redirect(settings.app.homeUrl || `${settings.server.basePath}404`)
     }
 
     /**
@@ -85,20 +83,9 @@ export class Server {
     notFoundRoute = async (req: express.Request, res: express.Response) => {
         logger.debug("Server.notFoundRoute", req.originalUrl)
 
+        const styles = fs.readFileSync(path.join(__dirname, "../assets/styles.css"), "utf8")
         const template = fs.readFileSync(path.join(__dirname, "../assets/404.html"), "utf8")
-        const linkIds = Object.keys(linkManager.links)
-        const logoIds = []
-
-        // Check all links, and filter only the ones that have a logo image.
-        for (let id of linkIds) {
-            const imagePath = path.join(__dirname, `../assets/images/${id}.png`)
-            if (fs.existsSync(imagePath)) {
-                logoIds.push(id)
-            }
-        }
-
-        const aTags = logoIds.map((id) => `<a href="https://links.devv.com/l/${id}"><img src="/images/${id}.png" /></a>`)
-        res.send(jaul.data.replaceTags(template, {logos: aTags.join(" ")}))
+        res.send(jaul.data.replaceTags(template, {styles: styles}))
     }
 
     /**
@@ -122,7 +109,7 @@ export class Server {
 
         if (!target) {
             logger.debug("Server.linkRoute", req.params.id, "404")
-            res.redirect("/404")
+            res.redirect(`${settings.server.basePath}404`)
             return
         }
 
@@ -131,16 +118,21 @@ export class Server {
         // Redirect straight away unless the rn query is set.
         if (req.query.rn != "1") {
             logger.info("Server.linkRoute", req.params.id, `IP: ${ip}`, `Country: ${countryLog}`, target.source, target.url)
-            res.redirect(target ? target.url : "/404")
+            res.redirect(target ? target.url : `${settings.server.basePath}404`)
             return
         }
 
+        const logoPath = settings.images.path.substring(0, 1) == "/" ? settings.images.path : path.join(__dirname, settings.images.path)
+        const styles = fs.readFileSync(path.join(__dirname, "../assets/styles.css"), "utf8")
         const template = fs.readFileSync(path.join(__dirname, "../assets/redir.html"), "utf8")
         const tags = {
-            from: req.query.from || "Devv",
+            from: req.query.from || settings.app.title,
+            title: settings.app.title,
+            styles: styles,
             target: target.source,
             url: target.url,
-            logo: fs.existsSync(path.join(__dirname, `../assets/images/${target.source}.png`)) ? target.source : "nologo"
+            imagesPath: settings.server.imagesPath,
+            logo: fs.existsSync(path.join(logoPath, `${target.source}.png`)) ? target.source : "nologo"
         }
 
         // Send template with replaced tags to the client.
