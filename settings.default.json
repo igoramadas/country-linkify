@@ -33,6 +33,8 @@
             "aliases": {}
         },
         "server": {
+            // Base path where links should be served from. Defaults to the root of the web server "/".
+            "basePath": "/",
             // Base server URL, can be left as null if using as part of another website / app.
             // Must be set when running in standalone mode.
             "url": null,
