@@ -13,31 +13,12 @@ body {
     width: auto;
 }
 
-h1 {
-    font-size: 9em;
-    margin: 0;
-}
-
 .wrapper {
     padding-top: 20px;
 }
 
 .margin-top {
     margin-top: 20px;
-}
-
-.logos {
-    background: rgb(220, 220, 220);
-    border-radius: 20px;
-    margin: auto;
-    max-width: 960px;
-    padding: 5px 0 40px 0;
-}
-
-.logos img {
-    margin: 5px 20px 5px 20px;
-    max-width: 260px;
-    vertical-align: middle;
 }
 
 .redir-logo {
