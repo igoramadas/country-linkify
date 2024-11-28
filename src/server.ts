@@ -62,6 +62,8 @@ export class Server {
             this.app.use(basePath, express.static(path.join(__dirname, "../assets")))
             this.app.listen(settings.server.port, () => logger.info("Server", `Listeing on port ${settings.server.port}, bound to ${basePath}`))
         } else {
+            const baseImagesPath = `${basePath}${settings.server.imagesPath}`.replace("//", "/")
+            this.app.get(`${baseImagesPath}:filename`, this.imageRoute)
             logger.info("Server", `Bound to ${basePath}`)
         }
     }
@@ -122,7 +124,7 @@ export class Server {
             return
         }
 
-        const logoPath = settings.images.path.substring(0, 1) == "/" ? settings.images.path : path.join(__dirname, settings.images.path)
+        const logoPath = settings.images.path.substring(0, 1) == "/" ? settings.images.path : path.join(process.cwd(), settings.images.path)
         const styles = fs.readFileSync(path.join(__dirname, "../assets/styles.css"), "utf8")
         const template = fs.readFileSync(path.join(__dirname, "../assets/redir.html"), "utf8")
         const tags = {
@@ -138,6 +140,16 @@ export class Server {
         // Send template with replaced tags to the client.
         logger.info("Server.linkRoute", req.params.id, `IP: ${ip}`, `Country: ${countryLog}`, "Redirection notice", target.source, target.url)
         res.send(jaul.data.replaceTags(template, tags))
+    }
+
+    /**
+     * Images and logos.
+     */
+    imageRoute = async (req: express.Request, res: express.Response) => {
+        logger.debug("Server.imageRoute", req.originalUrl)
+
+        const imagePath = settings.images.path.substring(0, 1) == "/" ? settings.images.path : path.join(process.cwd(), settings.images.path)
+        res.send(fs.readFileSync(path.join(imagePath, req.params.filename)))
     }
 
     /**
