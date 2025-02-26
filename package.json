@@ -1,6 +1,6 @@
 {
     "name": "country-linkify",
-    "version": "24.484.11725",
+    "version": "25.93.12128",
     "description": "Simple service to redirect links based on the client's country.",
     "keywords": [
         "bit.ly",
@@ -34,13 +34,13 @@
         "express": "^5.0.1",
         "jaul": "^1.7.1",
         "lodash": "^4.17.21",
-        "setmeup": "^1.9.4"
+        "setmeup": "^1.9.5"
     },
     "devDependencies": {
         "@types/express": "^5.0.0",
-        "@types/lodash": "^4.17.13",
-        "@types/node": "^22.10.1",
-        "typescript": "^5.7.2"
+        "@types/lodash": "^4.17.15",
+        "@types/node": "^22.13.5",
+        "typescript": "^5.7.3"
     },
     "prettier": {
         "trailingComma": "none",
