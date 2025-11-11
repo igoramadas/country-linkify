@@ -1,6 +1,6 @@
 {
     "name": "country-linkify",
-    "version": "25.365.11636",
+    "version": "25.462.12203",
     "description": "Simple service to redirect links based on the client's country.",
     "keywords": [
         "bit.ly",
@@ -8,7 +8,7 @@
         "linkify",
         "redirect"
     ],
-    "author": "Igor Ramadas <igor@devv.com>",
+    "author": "Igor Ramadas <igor@ramadas.net>",
     "homepage": "https://country-linkify.devv.com",
     "subdomain": "country-linkify",
     "license": "MIT",
@@ -37,10 +37,10 @@
         "setmeup": "^1.9.5"
     },
     "devDependencies": {
-        "@types/express": "^5.0.3",
+        "@types/express": "^5.0.5",
         "@types/lodash": "^4.17.20",
-        "@types/node": "^24.3.1",
-        "typescript": "^5.9.2"
+        "@types/node": "^24.10.0",
+        "typescript": "^5.9.3"
     },
     "prettier": {
         "trailingComma": "none",
