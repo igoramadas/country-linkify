@@ -2,6 +2,7 @@
 
 import countryManager from "./countrymanager"
 import linkManager from "./linkmanager"
+import {escapeHtml} from "./utils"
 import fs from "fs"
 import logger from "anyhow"
 import jaul from "jaul"
@@ -46,6 +47,10 @@ export class Server {
             this.app = express()
         } else {
             this.app = app
+        }
+
+        if (settings.server.trustProxy != null) {
+            this.app.set("trust proxy", settings.server.trustProxy)
         }
 
         const basePath = settings.server.basePath
@@ -105,7 +110,7 @@ export class Server {
         }
 
         const search = req.params.search
-        const linkId = decodeURIComponent(req.params.id || search)
+        const linkId = decodeURIComponent((req.params.id || search || "").toString())
         const sources = req.query.sources ? req.query.sources.toString().split(",") : null
         const target = linkManager.urlFor(linkId, country, sources, search ? true : false)
 
@@ -128,7 +133,7 @@ export class Server {
         const styles = fs.readFileSync(path.join(__dirname, "../assets/styles.css"), "utf8")
         const template = fs.readFileSync(path.join(__dirname, "../assets/redir.html"), "utf8")
         const tags = {
-            from: req.query.from || settings.app.title,
+            from: escapeHtml(String(req.query.from || settings.app.title)),
             title: settings.app.title,
             styles: styles,
             target: target.source,
@@ -149,7 +154,14 @@ export class Server {
         logger.debug("Server.imageRoute", req.originalUrl)
 
         const imagePath = settings.images.path.substring(0, 1) == "/" ? settings.images.path : path.join(process.cwd(), settings.images.path)
-        res.send(fs.readFileSync(path.join(imagePath, req.params.filename)))
+
+        // Root option makes send reject traversal (decoded "%2F" / "..") and absolute paths.
+        res.sendFile(req.params.filename as string, {root: imagePath, dotfiles: "deny"}, (err) => {
+            if (err && !res.headersSent) {
+                logger.debug("Server.imageRoute", req.originalUrl, "404")
+                res.status(404).end()
+            }
+        })
     }
 
     /**
@@ -194,22 +206,9 @@ export class Server {
      * @param req Request object.
      */
     getClientIP = (req: express.Request): string => {
-        const xfor = req.headers["x-forwarded-for"]
-
-        if (xfor != null && xfor != "") {
-            const ip = xfor.toString().split(",")[0]
-            logger.debug("Server.getClientIP", req.originalUrl, `From header: ${ip}`)
-            return ip
-        }
-
-        if (req.socket && req.socket.remoteAddress) {
-            const ip = req.socket.remoteAddress
-            logger.debug("Server.getClientIP", req.originalUrl, `From socket: ${ip}`)
-            return ip
-        }
-
-        logger.debug("Server.getClientIP", req.originalUrl, `From req.ip: ${req.ip}`)
-        return req.ip
+        const ip = req.ip || req.socket?.remoteAddress || ""
+        logger.debug("Server.getClientIP", req.originalUrl, `From request: ${ip}`)
+        return ip
     }
 
     /**
@@ -226,8 +225,10 @@ export class Server {
         }
 
         const cfHeader = req.headers["cf-ipcountry"]
+        const trustProxy = req.app.get("trust proxy fn")
+        const proxyAddress = req.socket?.remoteAddress
 
-        if (cfHeader) {
+        if (cfHeader && proxyAddress && typeof trustProxy == "function" && trustProxy(proxyAddress, 0)) {
             logger.debug("Server.getClientCountry", `IP ${ip}`, `From CF header: ${cfHeader}`)
             return cfHeader.toString().toLowerCase()
         }

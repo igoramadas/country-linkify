@@ -13,3 +13,18 @@ export const getSearchQuery = (id: string, source: string) => {
 
     return encodeURIComponent(id)
 }
+
+/**
+ * Escape a value for insertion into HTML text.
+ */
+export const escapeHtml = (value: string): string => {
+    const entities: {[character: string]: string} = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '\"': "&quot;",
+        "'": "&#39;"
+    }
+
+    return value.replace(/[&<>\"']/g, (character) => entities[character])
+}

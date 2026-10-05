@@ -10,8 +10,8 @@ Each key inside the JSON specs represents a link ID, and the target URLs by coun
 
 There are also 2 standard keys, prefixed with an underscore:
 
--   **\_default**: the default target URL(s) for that source.
--   **\_search**: URL for the search page of the source, must have a `{{query}}` tag defined
+- **\_default**: the default target URL(s) for that source.
+- **\_search**: URL for the search page of the source, must have a `{{query}}` tag defined
 
 A sample definition for "Amazon":
 
@@ -50,26 +50,28 @@ And a second file for "AliExpress":
 
 With the samples above, a user from Germany (de) will get redirected to the following target URLs:
 
--   **/l/amazon**: https://www.amazon.de/
--   **/l/amazon-help**: https://www.amazon.com/gp/help/customer/display.html
--   **/l/amazon-deals**: https://www.amazon.de/-/en/deals
--   **/l/deals**: https://www.amazon.de/-/en/deals or https://www.aliexpress.com/sp/campaign/wow/gcp-plus/300000444/njcQZ4CkBb
--   **/s/some-item**: https://de.aliexpress.com/w/some-item.html
+- **/l/amazon**: https://www.amazon.de/
+- **/l/amazon-help**: https://www.amazon.com/gp/help/customer/display.html
+- **/l/amazon-deals**: https://www.amazon.de/-/en/deals
+- **/l/deals**: https://www.amazon.de/-/en/deals or https://www.aliexpress.com/sp/campaign/wow/gcp-plus/300000444/njcQZ4CkBb
+- **/s/some-item**: https://de.aliexpress.com/w/some-item.html
 
 And the results for someone from US:
 
--   **/l/amazon**: https://www.amazon.com/
--   **/l/amazon-help**: https://www.amazon.com/gp/help/customer/display.html
--   **/l/amazon-deals**: https://www.amazon.com/gp/goldbox
--   **/s/some-item**: "https://www.amazon.com/s?k=some+item"
+- **/l/amazon**: https://www.amazon.com/
+- **/l/amazon-help**: https://www.amazon.com/gp/help/customer/display.html
+- **/l/amazon-deals**: https://www.amazon.com/gp/goldbox
+- **/s/some-item**: "https://www.amazon.com/s?k=some+item"
 
 ## Settings
 
-This tool is using the [SetMeUp](https://github.com/igoramadas/setmeup) module to handle its settings, so for detailed info please check its [docs](https://setmeup.devv.com).
+This tool is using the [SetMeUp](https://github.com/igoramadas/setmeup) module to handle its settings, so for detailed info please check its docs.
 
--   **settings.json** - settings shared by all environments, targeting production by default
--   **settings.development.json** - development settings, mostly when running on your dev machine
--   **settings.production.json** - production-only settings, except credentials and secrets (optional)
--   **settings.local.json** - private local-only settings, excluded from the GIT repo
+- **settings.json** - settings shared by all environments, targeting production by default
+- **settings.development.json** - development settings, mostly when running on your dev machine
+- **settings.production.json** - production-only settings, except credentials and secrets (optional)
+- **settings.local.json** - private local-only settings, excluded from the GIT repo
 
 Settings are self explanatory, please open each file to check the available options.
+
+When running behind a reverse proxy, set `server.trustProxy` to the proxy's known IP address or CIDR so Express can safely resolve the client IP. Forwarded IP and Cloudflare country headers are ignored unless they come from a trusted proxy. Avoid setting this to `true` unless every connection is guaranteed to pass through a trusted proxy.
