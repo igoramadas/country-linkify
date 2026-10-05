@@ -46,6 +46,8 @@
             "url": null,
             // Server port, required if the url above is also set.
             "port": null,
+            // Optional Express trust proxy value (prefer known proxy IPs or CIDRs).
+            "trustProxy": null,
             // Admin API key used as part of the API endpoint. For example if you set this to "my-api"
             // then the Admin API will be available at /my-api/.
             "apiKey": null,

@@ -3,8 +3,8 @@
 {
     "countryLinkify": {
         "app": {
-            // Homepage should redirect to devv.com.
-            "homeUrl": "https://devv.com/",
+            // Homepage should redirect to ramadas.net.
+            "homeUrl": "https://ramadas.net/",
             // Application title.
             "title": "My Links"
         },
@@ -25,12 +25,12 @@
         },
         // Server options on prod.
         "server": {
-            "url": "https://links.devv.com/",
+            "url": "https://links.ramadas.net/",
             "port": 8080,
-            // Admin API base endpoint should be https://links.devv.com/secret-api/.
+            // Admin API base endpoint should be https://links.ramadas.net/secret-api/.
             "apiKey": "secret-api",
-            // Admin API bearer token.
-            "apiToken": "some-token"
+            // Set a unique, high-entropy bearer token in private settings before starting.
+            "apiToken": null
         }
     }
 }

@@ -9,8 +9,8 @@
             "url": "http://linkify.local:3579/",
             // API identifier, by default it's "api" meaning Admin API endpoints will be available at /api/.
             "apiKey": "api",
-            // Bearer token to be passed for authentication.
-            "apiToken": "123",
+            // Set a unique bearer token in private settings before starting.
+            "apiToken": null,
             // Server port on dev.
             "port": 3579
         }
