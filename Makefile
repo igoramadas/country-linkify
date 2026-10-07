@@ -1,4 +1,3 @@
-TYPEDOC:= ./node_modules/.bin/typedoc
 TSC:= ./node_modules/.bin/tsc
 
 # Build the source.
@@ -8,12 +7,6 @@ build:
 # Run the app locally.
 run: build
 	npm run start
-
-# Generate docs.
-docs:
-	$(TYPEDOC)
-	cp CNAME docs/
-	cp .nojekyll docs/
 
 # Remove built source and dependencies.
 clean:
@@ -32,4 +25,4 @@ update:
 publish:
 	npm publish
 
-.PHONY: docs test
+.PHONY: test

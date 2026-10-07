@@ -22,7 +22,6 @@
     },
     "scripts": {
         "prepublishOnly": "./node_modules/.bin/tsc --removeComments",
-        "docs": "make docs",
         "start": "node lib/start.js"
     },
     "dependencies": {
